@@ -1,7 +1,7 @@
 {
-    "name": "maxmind/geoip",
+    "name": "geneanet/geoip",
     "type": "symfony-bundle",
-    "description": "MaxMind GeoIP Symfony2 Bundle",
+    "description": "MaxMind GeoIP Symfony2 Bundle for gnt",
     "keywords": ["maxmind geoip"],
     "version": "1.0.0",
     "license": "BSD",
