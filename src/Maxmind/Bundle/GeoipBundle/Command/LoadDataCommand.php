@@ -46,29 +46,20 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $source = $input->getArgument('source');
-        // Get the path to write the file from the configuration.
-        $destination = $this->getApplication()->getKernel()->getContainer()->getParameter('maxmind_geoip_data_file_path');
-        $destinationBeforeUnzip = sprintf('%s/%s', dirname($destination), basename($source));
-
-
+        $bundlePath = $this->getApplication()->getKernel()->getBundle('MaxmindGeoipBundle')->getPath();
+        $dataDir = sprintf('%s', $bundlePath.'/../../../../data/');
+        $filename = basename($source);
+        $destination = sprintf('%s/%s', $dataDir, $filename);
         $output->writeln(sprintf('Start downloading %s', $source));
         $output->writeln('...');
-        if (!copy($source, $destinationBeforeUnzip)) {
+        if (!copy($source, $destination)) {
             $output->writeln('<error>Error during file download occured</error>');
-
             return 1;
         }
-
         $output->writeln('<info>Download completed</info>');
         $output->writeln('Unzip the downloading data');
         $output->writeln('...');
-        system('gunzip -fc "'.$destinationBeforeUnzip.'" > "'.$destination.'"');
+        system('gunzip -f "'.$destination.'"');
         $output->writeln('<info>Unzip completed</info>');
-        $successDeleteFileZip = unlink($destinationBeforeUnzip);
-        if (!$successDeleteFileZip) {
-            $output->writeln('<error>Error to delete the original file after unzip</error>');
-
-            return 1;
-        }
     }
 }
