@@ -9,19 +9,20 @@ use Maxmind\lib\GeoIpRegionVars;
 
 class GeoipManager
 {
+    protected $filePath = '';
+
     protected $geoip = null;
 
     protected $record = null;
 
     public function __construct(Kernel $kernel)
     {
-    	$filePath = $kernel->getContainer()->getParameter('maxmind_geoip_data_file_path');
-        $this->geoip = new GeoIp($filePath);
+        $this->filePath = $kernel->getContainer()->getParameter('maxmind_geoip_data_file_path');
     }
 
     public function lookup($ip)
     {
-        $this->record = $this->geoip->geoip_record_by_addr($ip);
+        $this->record = $this->getGeoIp()->geoip_record_by_addr($ip);
 
         if ($this->record)
             return $this;
@@ -165,5 +166,19 @@ class GeoipManager
             return $this->record->continent_code;
 
         return $this->record;
+    }
+
+    /**
+     * Get the current geoip instance.
+     *
+     * @return GeoIp
+     */
+    protected function getGeoIp()
+    {
+        if (is_null($this->geoip)) {
+            $this->geoip = new GeoIp($this->filePath);
+        }
+
+        return $this->geoip;
     }
 }
